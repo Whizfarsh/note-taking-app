@@ -41,6 +41,7 @@ function NoteApp() {
 
 	const [showAddNote, setShowAddNote] = useState(false);
 	const [noteSelected, setNoteSeleted] = useState(null);
+	const [showUpdateNote, setShowNoteUpdate] = useState(false);
 
 	function handleAddNote(note) {
 		setNotes((notes) => [...notes, note]);
@@ -50,12 +51,25 @@ function NoteApp() {
 	function handleAddNoteToggle() {
 		setShowAddNote((show) => !show);
 		setNoteSeleted(null);
+		setShowNoteUpdate(false);
+	}
+
+	function handleDelete(id) {
+		setNotes(notes.filter((note) => id !== note.id));
+		setShowNoteUpdate(false);
+	}
+
+	function handleEdit(id) {
+		const selectedNote = notes.map((note) => note?.id === id);
+		setNoteSeleted(selectedNote);
+		setShowNoteUpdate((show) => !show);
 	}
 
 	function handleNoteSelection(note) {
 		setNoteSeleted((noteId) => (noteId?.id === note.id ? null : note));
 		setShowAddNote(false);
 	}
+
 	return (
 		<div className="noteapp">
 			<NoteLists
@@ -63,15 +77,25 @@ function NoteApp() {
 				onAddNoteToggle={handleAddNoteToggle}
 				onSelection={handleNoteSelection}
 				noteSelected={noteSelected}
+				onDelete={handleDelete}
+				onEdit={handleEdit}
 			/>
 			{showAddNote && (
 				<NoteContentAdd onAddNote={handleAddNote} onShow={showAddNote} />
 			)}
+			{showUpdateNote && <NoteOption note={noteSelected} />}
 		</div>
 	);
 }
 
-function NoteLists({ notes, onAddNoteToggle, onSelection, noteSelected }) {
+function NoteLists({
+	notes,
+	onAddNoteToggle,
+	onSelection,
+	noteSelected,
+	onDelete,
+	onEdit,
+}) {
 	return (
 		<div className="notelists">
 			<input type="text" placeholder="Search notes" />
@@ -84,6 +108,8 @@ function NoteLists({ notes, onAddNoteToggle, onSelection, noteSelected }) {
 						note={note}
 						onSelection={onSelection}
 						noteSelected={noteSelected}
+						onDelete={onDelete}
+						onEdit={onEdit}
 						key={note.id}
 					/>
 				))}
@@ -92,14 +118,24 @@ function NoteLists({ notes, onAddNoteToggle, onSelection, noteSelected }) {
 	);
 }
 
-function Note({ note, onSelection, noteSelected }) {
+function Note({ note, onSelection, noteSelected, onDelete, onEdit }) {
 	const isSelected = noteSelected?.id === note.id;
-	// console.log(isSelected);
 	return (
-		<div className={isSelected ? "selected" : ""}>
-			<li onClick={() => onSelection(note)}>{note.title}</li>
-			<span>{note.content.slice(0, 10)}...</span>
-		</div>
+		<>
+			<li
+				className={isSelected ? "selected" : ""}
+				onClick={() => onSelection(note)}
+			>
+				{note.title}
+				<span>{note.content.slice(0, 10)}...</span>
+				{isSelected && (
+					<div className="note-option">
+						<p onClick={() => onEdit(note.id)}>Edit</p>
+						<p onClick={() => onDelete(note.id)}>Delete</p>
+					</div>
+				)}
+			</li>
+		</>
 	);
 }
 
@@ -127,7 +163,6 @@ function NoteContentAdd({ onAddNote }) {
 
 	return (
 		<div className="note-content">
-			{/* <h3>Title</h3> */}
 			<form className="form-add" onSubmit={handleSubmit}>
 				<input
 					className="title"
@@ -143,6 +178,23 @@ function NoteContentAdd({ onAddNote }) {
 					onChange={(e) => setNoteText(e.target.value)}
 				/>
 				<button className="button">Add</button>
+			</form>
+		</div>
+	);
+}
+
+function NoteOption({ note }) {
+	return (
+		<div>
+			<form className="form-add">
+				<input
+					className="title"
+					type="text"
+					placeholder={note?.title}
+					value={note?.title}
+				/>
+				<input type="text" placeholder={note?.content} value={note?.content} />
+				<button className="button">Update</button>
 			</form>
 		</div>
 	);
