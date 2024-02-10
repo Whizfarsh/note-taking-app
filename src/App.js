@@ -70,6 +70,16 @@ function NoteApp() {
 		setShowAddNote(false);
 	}
 
+	function handleNoteUpdate(newTitle, newContent) {
+		setNotes((notes) =>
+			notes.map((note) =>
+				note.id === noteSelected.id
+					? { ...note, content: newContent, title: newTitle }
+					: note
+			)
+		);
+	}
+
 	return (
 		<div className="noteapp">
 			<NoteLists
@@ -83,7 +93,13 @@ function NoteApp() {
 			{showAddNote && (
 				<NoteContentAdd onAddNote={handleAddNote} onShow={showAddNote} />
 			)}
-			{showUpdateNote && <NoteOption note={noteSelected} />}
+			{showUpdateNote && (
+				<NoteOption
+					note={noteSelected}
+					notes={notes}
+					onUpdate={handleNoteUpdate}
+				/>
+			)}
 		</div>
 	);
 }
@@ -183,17 +199,31 @@ function NoteContentAdd({ onAddNote }) {
 	);
 }
 
-function NoteOption({ note }) {
+function NoteOption({ note, onUpdate }) {
+	const [newTitle, setNewTitle] = useState(note.title);
+	const [newContent, setNewContent] = useState(note.content);
+
+	function handleUpdate(e) {
+		e.preventDefault();
+
+		onUpdate(newTitle, newContent);
+	}
 	return (
 		<div>
-			<form className="form-add">
+			<form className="form-add" onSubmit={handleUpdate}>
 				<input
 					className="title"
 					type="text"
 					placeholder={note?.title}
-					value={note?.title}
+					value={newTitle}
+					onChange={(e) => setNewTitle(e.target.value)}
 				/>
-				<input type="text" placeholder={note?.content} value={note?.content} />
+				<input
+					type="text"
+					placeholder={note?.content}
+					value={newContent}
+					onChange={(e) => setNewContent(e.target.value)}
+				/>
 				<button className="button">Update</button>
 			</form>
 		</div>
