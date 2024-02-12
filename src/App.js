@@ -42,6 +42,7 @@ function NoteApp() {
 	const [showAddNote, setShowAddNote] = useState(false);
 	const [noteSelected, setNoteSeleted] = useState(null);
 	const [showUpdateNote, setShowNoteUpdate] = useState(false);
+	const [searchNote, setSearchNote] = useState("");
 
 	function handleAddNote(note) {
 		setNotes((notes) => [...notes, note]);
@@ -68,6 +69,9 @@ function NoteApp() {
 	function handleNoteSelection(note) {
 		setNoteSeleted((noteId) => (noteId?.id === note.id ? null : note));
 		setShowAddNote(false);
+		if (noteSelected?.id !== note.id && showUpdateNote) {
+			setShowNoteUpdate(false);
+		}
 	}
 
 	function handleNoteUpdate(newTitle, newContent) {
@@ -80,6 +84,19 @@ function NoteApp() {
 		);
 	}
 
+	function handleNoteSearch(searchNote) {
+		if (searchNote === "") setNotes(initialNotes);
+		const searchedNote = notes.filter((note) =>
+			// note.title.toLowerCase().includes(searchNote.toLowerCase()) ||
+			note.content.toLowerCase().includes(searchNote.toLowerCase())
+		);
+		// setNotes(searchedNote);
+		console.log(searchedNote);
+		// console.log(searchedNote.length);
+		// searchedNote ? setNotes(searchedNote) : setNotes(initialNotes);
+		setNotes(searchedNote.length === 0 ? notes : searchedNote);
+	}
+
 	return (
 		<div className="noteapp">
 			<NoteLists
@@ -89,9 +106,16 @@ function NoteApp() {
 				noteSelected={noteSelected}
 				onDelete={handleDelete}
 				onEdit={handleEdit}
+				searchNote={searchNote}
+				onSetSearch={setSearchNote}
+				onSearch={handleNoteSearch}
 			/>
 			{showAddNote && (
-				<NoteContentAdd onAddNote={handleAddNote} onShow={showAddNote} />
+				<NoteContentAdd
+					onAddNote={handleAddNote}
+					onShow={showAddNote}
+					notes={notes}
+				/>
 			)}
 			{showUpdateNote && (
 				<NoteOption
@@ -111,10 +135,24 @@ function NoteLists({
 	noteSelected,
 	onDelete,
 	onEdit,
+	searchNote,
+	onSetSearch,
+	onSearch,
 }) {
+	// onSearch();
 	return (
 		<div className="notelists">
-			<input type="text" placeholder="Search notes" />
+			<input
+				type="text"
+				placeholder="Search notes"
+				value={searchNote}
+				onChange={(e) => {
+					const textSearched = e.target.value;
+					onSetSearch(textSearched);
+					console.log(textSearched);
+					onSearch(textSearched);
+				}}
+			/>
 			<button className="button" onClick={() => onAddNoteToggle()}>
 				Add notes
 			</button>
@@ -142,6 +180,18 @@ function Note({ note, onSelection, noteSelected, onDelete, onEdit }) {
 				className={isSelected ? "selected" : ""}
 				onClick={() => onSelection(note)}
 			>
+				<span
+					style={{
+						// backgroundColor: "#6B96FF",
+						display: "inline-block",
+						padding: "0.4rem 0",
+						fontWeight: "700",
+						// width: "8.4rem",
+					}}
+				>
+					{note.category}
+				</span>
+
 				{note.title}
 				<span>{note.content.slice(0, 10)}...</span>
 				{isSelected && (
@@ -155,9 +205,12 @@ function Note({ note, onSelection, noteSelected, onDelete, onEdit }) {
 	);
 }
 
-function NoteContentAdd({ onAddNote }) {
+function NoteContentAdd({ onAddNote, notes }) {
 	const [noteTitle, setNoteTitle] = useState("");
 	const [noteText, setNoteText] = useState("");
+	// const [addCategory, setAddCategory] = useState([]);
+	// const [categories, setCategories] = useState([]);
+	// const [showAddcategory, setShowAddCategory] = useState(false);
 
 	function handleSubmit(e) {
 		e.preventDefault();
@@ -166,10 +219,10 @@ function NoteContentAdd({ onAddNote }) {
 			id: crypto.randomUUID(),
 			title: noteTitle,
 			content: noteText,
-			category: "jobs",
+			// category: "jobs",
 		};
 
-		console.log(newNote);
+		// console.log(newNote);
 
 		onAddNote(newNote);
 
@@ -177,6 +230,13 @@ function NoteContentAdd({ onAddNote }) {
 		setNoteText("");
 	}
 
+	// function handleAddCategory(category) {
+	// 	setCategories((categories) => [...categories, category]);
+	// 	console.log(categories);
+	// }
+
+	// category selection
+	// const [categorySelection, setcategorySelection] = useState("add category");
 	return (
 		<div className="note-content">
 			<form className="form-add" onSubmit={handleSubmit}>
@@ -187,7 +247,23 @@ function NoteContentAdd({ onAddNote }) {
 					value={noteTitle}
 					onChange={(e) => setNoteTitle(e.target.value)}
 				/>
+				<select>
+					<Category />
+				</select>
+
+				{/* {categorySelection === "add category"
+					? setShowAddCategory(true)
+					: setShowAddCategory(false)}
+				{showAddcategory && (
+					<AddCategory
+						// onAddCategory={handleAddCategory}
+						categories={categories}
+						showAddcategory={showAddcategory}
+					/>
+				)} */}
+
 				<input
+					className="content"
 					type="text"
 					placeholder="Start writing your note ..."
 					value={noteText}
@@ -197,6 +273,34 @@ function NoteContentAdd({ onAddNote }) {
 			</form>
 		</div>
 	);
+}
+function AddCategory({ onAddCategory, categories }) {
+	const [addCategory, setAddCategory] = useState("");
+
+	function handleCategory(e) {
+		e.preventDefault();
+
+		const category = addCategory;
+		onAddCategory(category);
+
+		console.log(categories);
+		setAddCategory("");
+	}
+	return (
+		<>
+			<input
+				type="text"
+				name=""
+				id=""
+				value={addCategory}
+				onChange={(e) => setAddCategory(e.target.value)}
+			/>
+			<button onClick={handleCategory}>add</button>
+		</>
+	);
+}
+function Category() {
+	return <option value="addCategory">Add Category</option>;
 }
 
 function NoteOption({ note, onUpdate }) {
