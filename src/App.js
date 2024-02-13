@@ -209,8 +209,8 @@ function NoteContentAdd({ onAddNote, notes }) {
 	const [noteTitle, setNoteTitle] = useState("");
 	const [noteText, setNoteText] = useState("");
 	// const [addCategory, setAddCategory] = useState([]);
-	// const [categories, setCategories] = useState([]);
-	// const [showAddcategory, setShowAddCategory] = useState(false);
+	const [categories, setCategories] = useState(["general"]);
+	const [showAddcategory, setShowAddCategory] = useState(false);
 
 	function handleSubmit(e) {
 		e.preventDefault();
@@ -230,13 +230,18 @@ function NoteContentAdd({ onAddNote, notes }) {
 		setNoteText("");
 	}
 
-	// function handleAddCategory(category) {
-	// 	setCategories((categories) => [...categories, category]);
-	// 	console.log(categories);
-	// }
+	function handleAddCategory(category) {
+		if (category === "") return;
+		setCategories((categories) => [...categories, category]);
+		// console.log(categories);
+	}
 
 	// category selection
-	// const [categorySelection, setcategorySelection] = useState("add category");
+	const [categorySelection, setCategorySelection] = useState("");
+
+	// function handleCategorySelection(){
+	// 	setCategorySelection()
+	// }
 	return (
 		<div className="note-content">
 			<form className="form-add" onSubmit={handleSubmit}>
@@ -247,21 +252,32 @@ function NoteContentAdd({ onAddNote, notes }) {
 					value={noteTitle}
 					onChange={(e) => setNoteTitle(e.target.value)}
 				/>
-				<select>
-					<Category />
+				<select
+					style={{ textTransform: "capitalize" }}
+					value={categorySelection}
+					onChange={(e) => {
+						const selectCatValue = e.target.value;
+						console.log(selectCatValue);
+						setCategorySelection(selectCatValue);
+						if (selectCatValue === "addcategory") {
+							setShowAddCategory(true);
+						} else {
+							setShowAddCategory(false);
+						}
+					}}
+				>
+					{categories.map((category) => (
+						<Category category={category} />
+					))}
+					<option value="addcategory">Add category</option>;{/* <Category /> */}
 				</select>
-
-				{/* {categorySelection === "add category"
-					? setShowAddCategory(true)
-					: setShowAddCategory(false)}
 				{showAddcategory && (
 					<AddCategory
-						// onAddCategory={handleAddCategory}
+						onAddCategory={handleAddCategory}
 						categories={categories}
-						showAddcategory={showAddcategory}
+						// showAddcategory={showAddcategory}
 					/>
-				)} */}
-
+				)}
 				<input
 					className="content"
 					type="text"
@@ -299,8 +315,13 @@ function AddCategory({ onAddCategory, categories }) {
 		</>
 	);
 }
-function Category() {
-	return <option value="addCategory">Add Category</option>;
+function Category({ category }) {
+	return (
+		<>
+			<option value={category}>{category}</option>;
+			{/* <option value="addCategory">Add category</option>; */}
+		</>
+	);
 }
 
 function NoteOption({ note, onUpdate }) {
