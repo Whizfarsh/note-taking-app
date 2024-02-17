@@ -61,21 +61,36 @@ body {
 	border-radius: 1.2rem;
 	border: none;
 }
+.btn-min {
+	background-color: #5586ff;
+	font-size: 1.4rem;
+	color: #fff;
+	border: none;
+	padding: 0.5rem;
+}
 
 .notelists ul {
 	list-style: none;
 	margin-left: 1.5rem;
 }
 .notelists ul li {
-	margin-top: 1rem;
+	margin-top: 1.8rem;
 	font-size: 1.8rem;
 	font-weight: 700;
 	display: flex;
 	flex-direction: column;
 }
-.notelists span {
+.note-category {
+	background-color: #3561cc;
+	color: #fff;
+	padding: 0.4rem 0.9rem;
+	font-weight: 700;
+	width: fit-content;
+}
+.notelists .note-info {
 	margin-left: 1rem;
 	font-size: 1.4rem;
+	/* color: #a1bcff; */
 }
 
 .selected {
@@ -96,11 +111,29 @@ body {
 .form-add .title {
 	height: 3.6rem;
 	padding: 0 1rem;
+	background-color: #ecf2ff;
+	border: 1px solid #3561cc;
+	border-radius: 1rem;
 }
-.form-add input:nth-child(2) {
-	height: 30rem;
+.form-add .category {
+	background-color: #ecf2ff;
+	border: 1px solid #3561cc;
+	padding: 1rem;
+}
+.form-add .content {
+	height: 20rem;
 	width: 30rem;
-	text-align: center;
+	text-align: start;
+	border: 1px solid #3561cc;
+	border-radius: 1.6rem;
+	padding: 0 1rem;
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+.form-add .content:focus,
+.form-add .title:focus,
+.form-add .category:focus {
+	outline: none;
 }
 .btn-container {
 	display: flex;
@@ -112,11 +145,20 @@ body {
 .note-option {
 	display: flex;
 	gap: 0.7rem;
-	justify-content: center;
+	/* justify-content: center; */
 	margin: 0.5rem 0;
 }
 .note-option p {
 	background-color: #333;
 	color: #f3f3f3;
 	padding: 0.3rem;
+}
+
+.cat-input {
+	height: 4.4rem;
+	border: 1px solid #3561cc;
+	padding: 1rem;
+}
+.cat-input:focus {
+	outline: none;
 }

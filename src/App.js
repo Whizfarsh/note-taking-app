@@ -86,14 +86,11 @@ function NoteApp() {
 
 	function handleNoteSearch(searchNote) {
 		if (searchNote === "") setNotes(initialNotes);
-		const searchedNote = notes.filter((note) =>
-			// note.title.toLowerCase().includes(searchNote.toLowerCase()) ||
-			note.content.toLowerCase().includes(searchNote.toLowerCase())
+		const searchedNote = notes.filter(
+			(note) =>
+				note.title.toLowerCase().includes(searchNote.toLowerCase()) ||
+				note.content.toLowerCase().includes(searchNote.toLowerCase())
 		);
-		// setNotes(searchedNote);
-		console.log(searchedNote);
-		// console.log(searchedNote.length);
-		// searchedNote ? setNotes(searchedNote) : setNotes(initialNotes);
 		setNotes(searchedNote.length === 0 ? notes : searchedNote);
 	}
 
@@ -180,20 +177,10 @@ function Note({ note, onSelection, noteSelected, onDelete, onEdit }) {
 				className={isSelected ? "selected" : ""}
 				onClick={() => onSelection(note)}
 			>
-				<span
-					style={{
-						// backgroundColor: "#6B96FF",
-						display: "inline-block",
-						padding: "0.4rem 0",
-						fontWeight: "700",
-						// width: "8.4rem",
-					}}
-				>
-					{note.category}
-				</span>
+				<span className="note-category">{note.category}</span>
 
 				{note.title}
-				<span>{note.content.slice(0, 10)}...</span>
+				<span className="note-info">{note.content.slice(0, 10)}...</span>
 				{isSelected && (
 					<div className="note-option">
 						<p onClick={() => onEdit(note.id)}>Edit</p>
@@ -212,6 +199,9 @@ function NoteContentAdd({ onAddNote, notes }) {
 	const [categories, setCategories] = useState(["general"]);
 	const [showAddcategory, setShowAddCategory] = useState(false);
 
+	// category selection
+	const [categorySelection, setCategorySelection] = useState("General");
+
 	function handleSubmit(e) {
 		e.preventDefault();
 
@@ -219,29 +209,23 @@ function NoteContentAdd({ onAddNote, notes }) {
 			id: crypto.randomUUID(),
 			title: noteTitle,
 			content: noteText,
-			// category: "jobs",
+			category: categorySelection,
 		};
-
-		// console.log(newNote);
 
 		onAddNote(newNote);
 
 		setNoteTitle("");
 		setNoteText("");
+		setCategorySelection("General");
 	}
 
 	function handleAddCategory(category) {
 		if (category === "") return;
 		setCategories((categories) => [...categories, category]);
-		// console.log(categories);
+		setCategorySelection(category);
+		setShowAddCategory(false);
 	}
 
-	// category selection
-	const [categorySelection, setCategorySelection] = useState("");
-
-	// function handleCategorySelection(){
-	// 	setCategorySelection()
-	// }
 	return (
 		<div className="note-content">
 			<form className="form-add" onSubmit={handleSubmit}>
@@ -253,29 +237,30 @@ function NoteContentAdd({ onAddNote, notes }) {
 					onChange={(e) => setNoteTitle(e.target.value)}
 				/>
 				<select
+					className="category"
 					style={{ textTransform: "capitalize" }}
 					value={categorySelection}
 					onChange={(e) => {
 						const selectCatValue = e.target.value;
 						console.log(selectCatValue);
-						setCategorySelection(selectCatValue);
 						if (selectCatValue === "addcategory") {
+							setCategorySelection(selectCatValue);
 							setShowAddCategory(true);
 						} else {
+							setCategorySelection(selectCatValue);
 							setShowAddCategory(false);
 						}
 					}}
 				>
 					{categories.map((category) => (
-						<Category category={category} />
+						<Category category={category} key={category} />
 					))}
-					<option value="addcategory">Add category</option>;{/* <Category /> */}
+					<option value="addcategory">Add category</option>;
 				</select>
 				{showAddcategory && (
 					<AddCategory
 						onAddCategory={handleAddCategory}
 						categories={categories}
-						// showAddcategory={showAddcategory}
 					/>
 				)}
 				<input
@@ -285,7 +270,7 @@ function NoteContentAdd({ onAddNote, notes }) {
 					value={noteText}
 					onChange={(e) => setNoteText(e.target.value)}
 				/>
-				<button className="button">Add</button>
+				<button className="button">Add note</button>
 			</form>
 		</div>
 	);
@@ -299,19 +284,22 @@ function AddCategory({ onAddCategory, categories }) {
 		const category = addCategory;
 		onAddCategory(category);
 
-		console.log(categories);
+		// console.log(categories);
 		setAddCategory("");
 	}
 	return (
 		<>
 			<input
+				className="cat-input"
 				type="text"
 				name=""
 				id=""
 				value={addCategory}
 				onChange={(e) => setAddCategory(e.target.value)}
 			/>
-			<button onClick={handleCategory}>add</button>
+			<button className="btn-min" onClick={handleCategory}>
+				add category
+			</button>
 		</>
 	);
 }
