@@ -162,3 +162,17 @@ body {
 .cat-input:focus {
 	outline: none;
 }
+
+/* MEDIA QUERIES */
+@media (max-width: 600px) {
+	.noteapp {
+		flex-direction: column;
+		width: 70%;
+	}
+	.notelists {
+		order: 2;
+	}
+	.form-add .content {
+		width: 100%;
+	}
+}

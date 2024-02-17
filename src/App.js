@@ -332,6 +332,7 @@ function NoteOption({ note, onUpdate }) {
 					onChange={(e) => setNewTitle(e.target.value)}
 				/>
 				<input
+					className="content"
 					type="text"
 					placeholder={note?.content}
 					value={newContent}
